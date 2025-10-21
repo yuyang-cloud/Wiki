@@ -179,3 +179,39 @@ for next_prompt in ["dog runs", "dog jumps", "dog barks"]:
     last_frames = clip[-5:]  # 用作条件
     clip_next = generate_video(last_frames, prompt=next_prompt)
     clip = concatenate(clip, clip_next)
+```
+
+### Forward数据流：
+
+```python
+Inputs
+  x: (B=1, Cx=16, F, H//8, W//8)           # 噪声/潜变量
+  y: (B=1, Cy=20, F, H//8, W//8)           # 4通道temporal mask + 16通道VAE latent; F=(ref_frames+gen_frames)//4=(4+80)//4=21
+  context_txt: (B, Ltxt, *)            # 文本编码输出（未过DiT的text_embedding）
+  clip_feature: (B, Cclip, H, W)       # reference_img经过图像编码器输出的clip特征（用于图文条件）
+
+Time/Text/Image embeddings
+  t_step -> sinusoidal -> time_embedding -> (B, D) -> time_projection -> t_mod: (B, 6, D)
+  context = text_embedding(context_txt): (B, Ltxt, D)
+  clip_emb = img_emb(clip_feature): (B, Limg, D)
+  context = concat([clip_emb, context], dim=1): (B, Limg+Ltxt, D)
+
+Concat x and y (仅当 dit.has_image_input=True)
+  x_cat = concat([x, y], dim=1): (B, Cx+Cy=36, F, H//8, W//8)
+
+Patchify to tokens
+  x_tok, (f, h, w) = patchify(x_cat)
+  其中 f=F, h=H//8, w=W//8
+  x_tok: (B, S, D)  # S = f*h*w 的token序列
+  freqs = build_positional(freqs_fhw, grid_size=(f,h,w))  # (S, 1, D_freq)
+
+for block in dit.blocks:
+    x_tok = block(x_tok, context, t_mod, freqs, grid_size=(f,h,w))
+
+Head + 聚合 + Unpatchify
+  x_tok = dit.head(x_tok, t)              # 条件到预测空间
+  x_pred = unpatchify(x_tok, (f, h, w))   # (B, Cx=16, F, H//8, W//8)
+
+Output to scheduler
+  返回噪声预测 x_pred，与调度器 step 结合更新 latents
+```
