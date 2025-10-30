@@ -285,3 +285,4 @@ SVI 提出 **Error-Recycling Fine-Tuning (ERFT)**：
 > 或 “双向 DiT + Diffusion Forcing 训练 + ERFT 微调 + Prompt-Switch 推理”。  
 
 ---
+
