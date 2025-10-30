@@ -440,5 +440,3 @@
   - temp_max_length 在序列启动时需广播一致
 - 时步返回：
   - 仅当 `same_step_across_blocks=True` 时，管线返回 denoised_timestep_from/to；否则应按 None 处理或在损失内自行处理
-
-以上流程与形状约定覆盖了 streaming_train 模式下一次训练步的完整数据流与函数调用关系。可直接将本文件另存为 Markdown 笔记。
