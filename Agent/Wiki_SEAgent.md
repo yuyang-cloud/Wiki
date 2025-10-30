@@ -5,7 +5,7 @@
 
 ---
 
-![SEAgent](https://github.com/yuyang-cloud/Wiki/tree/main/Assets/SEAgent.jpg)
+![SEAgent](https://github.com/yuyang-cloud/Wiki/blob/main/Assets/SEAgent.jpg?raw=true)
 
 ---
 
