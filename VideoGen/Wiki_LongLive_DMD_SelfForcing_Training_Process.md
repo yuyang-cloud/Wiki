@@ -1,5 +1,11 @@
 # 🧩 DMD / Self-Forcing 训练流程总览
 
+---
+
+![LongLive](https://github.com/yuyang-cloud/Wiki/blob/main/Assets/LongLive_Training.jpg?raw=true)
+
+---
+
 > **核心思想**  
 > DMD（Distribution Matching Distillation）是一种基于 **样本分布对齐** 的蒸馏方法。  
 > 它不直接让学生模型拟合教师模型的输出值，而是让学生生成的样本在样本空间上**沿着教师给出的分布梯度方向更新**，  
